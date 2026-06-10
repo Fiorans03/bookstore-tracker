@@ -1,0 +1,78 @@
+/* overlay full screen */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+  padding: 20px;
+}
+
+/* box modale */
+.modal {
+  background: white;
+  width: 100%;
+  max-width: 360px;
+  border-radius: 18px;
+  padding: 22px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+  animation: pop 0.18s ease-out;
+}
+
+/* titolo */
+.modal-title {
+  margin: 0 0 10px;
+  font-size: 20px;
+  font-weight: 700;
+  color: #111;
+}
+
+/* testo */
+.modal-text {
+  margin: 0;
+  font-size: 14px;
+  color: #555;
+}
+
+/* bottoni */
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+/* annulla */
+.btn-cancel {
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: none;
+  background: #e5e5e5;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+/* conferma logout */
+.btn-danger {
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: none;
+  background: #ff3b30;
+  color: white;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+/* animazione */
+@keyframes pop {
+  from {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}

@@ -1,0 +1,108 @@
+/* TITLE */
+.page-title {
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 24px;
+  color: #111;
+}
+
+/* LIST */
+.tasks-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* CARD */
+.task-card {
+  background: white;
+
+  border: 1px solid #eee;
+  border-radius: 16px;
+
+  padding: 16px;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+
+  transition: 0.2s;
+}
+
+.task-card:hover {
+  transform: translateY(-2px);
+}
+
+/* LEFT */
+.task-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  flex: 1;
+}
+
+/* TEXT */
+.task-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.task-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #111;
+}
+
+.task-desc {
+  font-size: 13px;
+  color: #666;
+}
+
+.done {
+  text-decoration: line-through;
+  opacity: 0.5;
+}
+
+/* CHECKBOX */
+input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: #6a5acd;
+}
+
+/* DELETE */
+.delete-btn {
+  border: none;
+  background: none;
+
+  font-size: 18px;
+
+  cursor: pointer;
+
+  width: 32px;
+  height: 32px;
+
+  border-radius: 10px;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  transition: 0.2s;
+  opacity: 0.6;
+}
+
+.delete-btn:hover {
+  background: #f2f2f2;
+  opacity: 1;
+}
+
+/* EMPTY */
+.empty {
+  color: #777;
+  font-size: 14px;
+}

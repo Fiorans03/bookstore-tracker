@@ -1,0 +1,61 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Checkout repo
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # 2. Setup Node.js
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      # -------------------------
+      # BACKEND - TEST BUILD
+      # -------------------------
+      - name: Install backend dependencies
+        run: |
+          cd backend
+          npm install
+
+      - name: Backend lint / smoke test
+        run: |
+          cd backend
+          node -c src/app.js
+
+      # -------------------------
+      # FRONTEND - BUILD CHECK
+      # -------------------------
+      - name: Install frontend dependencies
+        run: |
+          cd frontend
+          npm install
+
+      - name: Build frontend
+        run: |
+          cd frontend
+          npm run build
+
+      # -------------------------
+      # DOCKER BUILD (FULL STACK CHECK)
+      # -------------------------
+      - name: Build Docker images
+        run: |
+          docker compose build
+
+      # -------------------------
+      # FINAL STATUS
+      # -------------------------
+      - name: Success
+        run: echo "CI Pipeline completed successfully"

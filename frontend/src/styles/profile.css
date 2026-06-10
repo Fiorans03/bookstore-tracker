@@ -1,0 +1,116 @@
+/* PAGE TITLE */
+.page-title {
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 24px;
+}
+
+/* PROFILE CARD */
+.profile-card {
+  background: white;
+  padding: 28px;
+  border-radius: 20px;
+
+  text-align: center;
+
+  border: 1px solid #eee;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+
+  margin-bottom: 24px;
+}
+
+.avatar {
+  width: 90px;
+  height: 90px;
+
+  margin: 0 auto 14px;
+
+  border-radius: 50%;
+
+  background: #6a5acd;
+  color: white;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  font-size: 38px;
+  font-weight: 700;
+}
+
+.profile-name {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 700;
+  color: #111;
+}
+
+.profile-email {
+  margin-top: 6px;
+  font-size: 14px;
+  color: #666;
+}
+
+/* SETTINGS */
+.settings-section {
+  background: white;
+  border-radius: 16px;
+
+  border: 1px solid #eee;
+
+  margin-bottom: 18px;
+
+  overflow: hidden;
+}
+
+.settings-title {
+  padding: 12px 16px;
+
+  font-size: 12px;
+  font-weight: 700;
+
+  color: #777;
+
+  background: #f5f6fb;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.settings-item {
+  padding: 16px;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  border-top: 1px solid #eee;
+
+  cursor: pointer;
+
+  transition: 0.2s;
+  font-size: 15px;
+}
+
+.settings-item:hover {
+  background: #f9f9f9;
+}
+
+.settings-item:first-of-type {
+  border-top: none;
+}
+
+.arrow {
+  opacity: 0.4;
+}
+
+.settings-item.logout {
+  color: #ff3b30;
+  font-weight: 600;
+}
+
+
+@media (max-width: 1024px) {
+  .page-title {
+    font-size: 24px;
+  }
+}
