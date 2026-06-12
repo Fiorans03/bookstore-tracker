@@ -2,40 +2,78 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 
 function App() {
+  const [view, setView] = useState('login'); // 'login', 'register', o 'inventory'
+  const [token, setToken] = useState(localStorage.getItem('token') || '');
+  
+  // Stati per i form
+  const [loginForm, setLoginForm] = useState({ email: '', password: '' });
+  const [registerForm, setRegisterForm] = useState({ username: '', email: '', password: '' });
+  
+  // Stati per l'inventario
   const [items, setItems] = useState([]);
   const [form, setForm] = useState({ name: '', category: '', quantity: '', location: '' });
   const [searchTerm, setSearchTerm] = useState('');
   const [editingId, setEditingId] = useState(null);
 
+  // Configurazione Axios per inviare il token
+  useEffect(() => {
+    if (token) {
+      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+      fetchItems();
+    }
+  }, [token]);
+
   const fetchItems = async () => {
     try {
       const res = await axios.get('http://localhost:3000/inventory');
       setItems(res.data);
-    } catch (err) { console.error(err); }
+    } catch (err) { console.error("Errore fetch:", err); }
   };
 
-  useEffect(() => { fetchItems(); }, []);
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    try {
+      const res = await axios.post('http://localhost:3000/auth/login', loginForm);
+      const newToken = res.data.token;
+      localStorage.setItem('token', newToken);
+      setToken(newToken);
+      setView('inventory');
+    } catch (err) {
+      alert("Login fallito: controlla email e password");
+    }
+  };
 
+  const handleRegister = async (e) => {
+    e.preventDefault();
+    try {
+      await axios.post('http://localhost:3000/auth/register', registerForm);
+      alert("Registrazione avvenuta con successo! Ora effettua il login.");
+      setView('login');
+    } catch (err) {
+      alert("Registrazione fallita: l'email o lo username potrebbero essere già in uso.");
+    }
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    setToken('');
+    setView('login');
+    setLoginForm({ email: '', password: '' });
+  };
+
+  // --- FUNZIONI INVENTARIO (come prima) ---
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       if (editingId) {
-        // PUT: Modifica oggetto esistente
-        await axios.put(`http://localhost:3000/inventory/${editingId}`, { 
-          ...form, quantity: Number(form.quantity) 
-        });
-        setEditingId(null); // Esci dalla modalità modifica
+        await axios.put(`http://localhost:3000/inventory/${editingId}`, { ...form, quantity: Number(form.quantity) });
+        setEditingId(null);
       } else {
-        // POST: Aggiungi nuovo oggetto
-        await axios.post('http://localhost:3000/inventory', { 
-          ...form, quantity: Number(form.quantity) 
-        });
+        await axios.post('http://localhost:3000/inventory', { ...form, quantity: Number(form.quantity) });
       }
       setForm({ name: '', category: '', quantity: '', location: '' });
       fetchItems();
-    } catch (err) {
-      console.error("Errore nel salvataggio:", err);
-    }
+    } catch (err) { console.error("Errore salvataggio:", err); }
   };
 
   const handleEdit = (item) => {
@@ -44,32 +82,56 @@ function App() {
   };
 
   const handleDelete = async (id) => {
-    if (window.confirm("Sei sicuro di voler eliminare questo oggetto?")) {
+    if (window.confirm("Eliminare questo oggetto?")) {
       await axios.delete(`http://localhost:3000/inventory/${id}`);
       fetchItems();
     }
   };
 
-  const handleCancel = () => {
-    setEditingId(null);
-    setForm({ name: '', category: '', quantity: '', location: '' });
-  };
-
-  // Filtra gli oggetti in base alla ricerca (nome o categoria)
   const filteredItems = items.filter(item => 
     item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     item.category.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  // Metriche per la Dashboard
   const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
   const lowStockCount = items.filter(item => item.quantity <= item.min_threshold).length;
 
+  // --- RENDER CONDIZIONALE ---
+  if (!token) {
+    return (
+      <div style={{ maxWidth: '400px', margin: '4rem auto', padding: '2rem', border: '1px solid #ddd', borderRadius: '8px', fontFamily: 'sans-serif', textAlign: 'center' }}>
+        <h2>📦 Inventory Tracker</h2>
+        <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', marginBottom: '1.5rem' }}>
+          <button onClick={() => setView('login')} style={{ fontWeight: view === 'login' ? 'bold' : 'normal', background: 'none', border: 'none', borderBottom: view === 'login' ? '2px solid blue' : 'none', cursor: 'pointer' }}>Accedi</button>
+          <button onClick={() => setView('register')} style={{ fontWeight: view === 'register' ? 'bold' : 'normal', background: 'none', border: 'none', borderBottom: view === 'register' ? '2px solid blue' : 'none', cursor: 'pointer' }}>Registrati</button>
+        </div>
+
+        {view === 'login' ? (
+          <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            <input placeholder="Email" type="email" value={loginForm.email} onChange={e => setLoginForm({...loginForm, email: e.target.value})} required style={{ padding: '0.5rem' }} />
+            <input placeholder="Password" type="password" value={loginForm.password} onChange={e => setLoginForm({...loginForm, password: e.target.value})} required style={{ padding: '0.5rem' }} />
+            <button type="submit" style={{ padding: '0.7rem', background: '#1976d2', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}>Entra</button>
+          </form>
+        ) : (
+          <form onSubmit={handleRegister} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            <input placeholder="Username" value={registerForm.username} onChange={e => setRegisterForm({...registerForm, username: e.target.value})} required style={{ padding: '0.5rem' }} />
+            <input placeholder="Email" type="email" value={registerForm.email} onChange={e => setRegisterForm({...registerForm, email: e.target.value})} required style={{ padding: '0.5rem' }} />
+            <input placeholder="Password" type="password" value={registerForm.password} onChange={e => setRegisterForm({...registerForm, password: e.target.value})} required style={{ padding: '0.5rem' }} />
+            <button type="submit" style={{ padding: '0.7rem', background: '#2e7d32', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}>Crea Account</button>
+          </form>
+        )}
+      </div>
+    );
+  }
+
+  // Se c'è il token, mostra l'inventario (lo stesso codice di prima, con in più il pulsante Logout)
   return (
     <div style={{ padding: '2rem', fontFamily: 'sans-serif', maxWidth: '800px', margin: '0 auto' }}>
-      <h1 style={{ textAlign: 'center' }}>📦 Inventory Tracker</h1>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+        <h1 style={{ margin: 0 }}>📦 Inventory Tracker</h1>
+        <button onClick={handleLogout} style={{ padding: '0.5rem 1rem', background: '#f44336', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>🚪 Logout</button>
+      </div>
       
-      {/* 📊 DASHBOARD METRICHE */}
       <div style={{ display: 'flex', gap: '1rem', marginBottom: '2rem', justifyContent: 'center' }}>
         <div style={{ background: '#e3f2fd', padding: '1rem', borderRadius: '8px', textAlign: 'center', flex: 1 }}>
           <h3 style={{ margin: 0, color: '#1565c0' }}>Totale Oggetti</h3>
@@ -81,55 +143,31 @@ function App() {
         </div>
       </div>
 
-      {/* 🔍 BARRA DI RICERCA */}
-      <input 
-        placeholder="🔍 Cerca per nome o categoria..." 
-        value={searchTerm}
-        onChange={e => setSearchTerm(e.target.value)}
-        style={{ width: '100%', padding: '0.8rem', marginBottom: '1rem', borderRadius: '4px', border: '1px solid #ccc', fontSize: '1rem', boxSizing: 'border-box' }}
-      />
+      <input placeholder="🔍 Cerca per nome o categoria..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} style={{ width: '100%', padding: '0.8rem', marginBottom: '1rem', borderRadius: '4px', border: '1px solid #ccc', fontSize: '1rem', boxSizing: 'border-box' }} />
 
-      {/* 📝 FORM AGGIUNGI / MODIFICA */}
       <form onSubmit={handleSubmit} style={{ display: 'flex', gap: '0.5rem', marginBottom: '2rem', flexWrap: 'wrap', background: '#f9f9f9', padding: '1rem', borderRadius: '8px' }}>
         <input placeholder="Nome" value={form.name} onChange={e => setForm({...form, name: e.target.value})} required style={{ flex: 2, padding: '0.5rem' }} />
         <input placeholder="Categoria" value={form.category} onChange={e => setForm({...form, category: e.target.value})} style={{ flex: 1, padding: '0.5rem' }} />
         <input type="number" placeholder="Qtà" value={form.quantity} onChange={e => setForm({...form, quantity: e.target.value})} required style={{ width: '80px', padding: '0.5rem' }} />
         <input placeholder="Posizione" value={form.location} onChange={e => setForm({...form, location: e.target.value})} style={{ flex: 1, padding: '0.5rem' }} />
-        <button type="submit" style={{ padding: '0.5rem 1rem', background: '#1976d2', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}>
-          {editingId ? '💾 Salva' : '➕ Aggiungi'}
-        </button>
-        {editingId && (
-          <button type="button" onClick={handleCancel} style={{ padding: '0.5rem 1rem', background: '#9e9e9e', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>
-            Annulla
-          </button>
-        )}
+        <button type="submit" style={{ padding: '0.5rem 1rem', background: '#1976d2', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}>{editingId ? '💾 Salva' : '➕ Aggiungi'}</button>
+        {editingId && <button type="button" onClick={() => { setEditingId(null); setForm({ name: '', category: '', quantity: '', location: '' }); }} style={{ padding: '0.5rem 1rem', background: '#9e9e9e', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>Annulla</button>}
       </form>
 
-      {/* 📋 LISTA OGGETTI */}
       <ul style={{ listStyle: 'none', padding: 0 }}>
-        {filteredItems.length === 0 ? (
-          <p style={{ textAlign: 'center', color: '#666' }}>Nessun oggetto trovato.</p>
-        ) : (
-          filteredItems.map(item => (
-            <li key={item.id} style={{ padding: '1rem', borderBottom: '1px solid #eee', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <div>
-                <strong style={{ fontSize: '1.1rem' }}>{item.name}</strong> 
-                <span style={{ color: '#666', marginLeft: '0.5rem' }}>({item.category})</span>
-                <br />
-                <span>Qtà: {item.quantity} | 📍 {item.location}</span>
-                {item.quantity <= item.min_threshold && <span style={{ color: 'red', marginLeft: '0.5rem', fontWeight: 'bold' }}>⚠️ Scorta bassa!</span>}
-              </div>
-              <div style={{ display: 'flex', gap: '0.5rem' }}>
-                <button onClick={() => handleEdit(item)} style={{ padding: '0.4rem 0.8rem', background: '#ff9800', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>
-                  ✏️ Modifica
-                </button>
-                <button onClick={() => handleDelete(item.id)} style={{ padding: '0.4rem 0.8rem', background: '#f44336', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>
-                  🗑️ Elimina
-                </button>
-              </div>
-            </li>
-          ))
-        )}
+        {filteredItems.length === 0 ? <p style={{ textAlign: 'center', color: '#666' }}>Nessun oggetto trovato.</p> : filteredItems.map(item => (
+          <li key={item.id} style={{ padding: '1rem', borderBottom: '1px solid #eee', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div>
+              <strong style={{ fontSize: '1.1rem' }}>{item.name}</strong> <span style={{ color: '#666' }}>({item.category})</span><br />
+              <span>Qtà: {item.quantity} | 📍 {item.location}</span>
+              {item.quantity <= item.min_threshold && <span style={{ color: 'red', marginLeft: '0.5rem', fontWeight: 'bold' }}>⚠️ Scorta bassa!</span>}
+            </div>
+            <div style={{ display: 'flex', gap: '0.5rem' }}>
+              <button onClick={() => handleEdit(item)} style={{ padding: '0.4rem 0.8rem', background: '#ff9800', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>✏️ Modifica</button>
+              <button onClick={() => handleDelete(item.id)} style={{ padding: '0.4rem 0.8rem', background: '#f44336', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>🗑️ Elimina</button>
+            </div>
+          </li>
+        ))}
       </ul>
     </div>
   );
