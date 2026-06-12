@@ -164,3 +164,36 @@ npm run dev
 ```
 
 In modalità manuale il database e le relative tabelle devono essere inizializzati manualmente tramite lo script `init.sql`
+
+
+
+# 📦 Inventory Tracker
+
+Applicazione web full-stack per la gestione multi-utente di un inventario, con monitoraggio delle scorte in tempo reale.
+
+## 🚀 Funzionalità Principali
+- **Autenticazione Sicura**: Registrazione e login con crittografia password (bcrypt) e token JWT.
+- **Isolamento Dati**: Ogni utente visualizza e gestisce esclusivamente il proprio inventario (Multi-tenancy).
+- **Dashboard Intelligente**: Metriche in tempo reale su totale oggetti e alert automatici per le scorte basse.
+- **CRUD Completo**: Creazione, lettura, modifica ed eliminazione degli articoli con barra di ricerca istantanea.
+- **Containerizzazione**: Ambiente di sviluppo e produzione riproducibile al 100% tramite Docker Compose.
+- **CI/CD**: Pipeline automatizzata con GitHub Actions per il controllo di qualità e la build a ogni push.
+
+## 🛠️ Stack Tecnologico
+| Livello | Tecnologia |
+|---------|------------|
+| **Frontend** | React 19, Vite, Axios, CSS inline |
+| **Backend** | Node.js 20, Express, JWT, bcrypt |
+| **Database** | PostgreSQL 16 |
+| **DevOps** | Docker, Docker Compose, GitHub Actions |
+
+## ▶️ Avvio Locale
+Assicurati di avere Docker Desktop installato e in esecuzione.
+
+```bash
+# 1. Clona il repository
+git clone https://github.com/TUO_USERNAME/inventory-tracker.git
+cd inventory-tracker
+
+# 2. Avvia tutti i servizi (Frontend, Backend, Database)
+docker compose up --build
