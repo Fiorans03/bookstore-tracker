@@ -1,40 +1,40 @@
-# Inventory Tracker
+# 📚 BookStore Tracker
 
-Inventory tracker è un'applicazione web full-stack per la gestione multi-utente di un inventario con monitoraggio delle scorte in tempo reale. Il progetto è completamente containerizzato tramite Docker Compose.
+BookStore Tracker è un'applicazione web full-stack per la gestione multi-utente delle scorte di una libreria, con monitoraggio dei volumi in tempo reale. Il progetto è completamente containerizzato tramite Docker Compose.
 
 ## Progetto
-Applicazione web che permette la gestione di un inventario personale o professionale tramite autenticazione JWT. Gli utenti possono registrarsi, effettuare login e gestire i propri articoli in modo isolato, con dashboard in tempo reale e alert automatici per le scorte basse.
+Ho sviluppato un'applicazione web che permette la gestione del catalogo di una libreria tramite autenticazione JWT. Gli utenti possono registrarsi, effettuare login e gestire i propri volumi in modo isolato, con dashboard in tempo reale e alert automatici per i libri da riordinare.
 
 ### 1. Funzionalità
-- **Registrazione e login sicuri**: Autenticazione JWT con validazione robusta della password (lunghezza, maiuscole, minuscole, numeri, caratteri speciali) sia lato frontend che backend
-- **Isolamento dati multi-utente**: Ogni utente visualizza e gestisce esclusivamente il proprio inventario (Multi-tenancy)
-- **UX Avanzata per l'inserimento**: Lista a discesa per le categorie con icone, per prevenire errori di battitura e standardizzare i dati
-- **Monitoraggio scorte granulare**: Indicatore visivo di stato per ogni singolo articolo (🟢 OK, 🟡 ATTENZIONE, 🔴 CRITICO) basato sulla soglia minima
-- **Filtro operativo rapido**: Checkbox "Solo in esaurimento" per isolare istantaneamente le merci che necessitano di riordino
-- **CRUD completo e Ricerca**: Creazione, lettura, modifica ed eliminazione articoli con barra di ricerca istantanea per nome o categoria
-- **Architettura containerizzata**: Portabilità totale garantita da Docker Compose
+- **Registrazione e login sicuri**: Autenticazione JWT con validazione robusta della password (lunghezza, maiuscole, minuscole, numeri, caratteri speciali) verificata sia lato frontend che backend.
+- **Isolamento dati multi-utente**: Ogni utente visualizza e gestisce esclusivamente il proprio catalogo (Multi-tenancy).
+- **UX avanzata per l'inserimento**: Lista a discesa per i generi, per prevenire errori di battitura e standardizzare i dati.
+- **Monitoraggio scorte granulare**: Indicatore visivo di stato per ogni singolo volume (🟢 DISPONIBILE, 🟡 SCORTA BASSA, 🔴 DA RIORDINARE) basato sulla soglia minima.
+- **Filtro operativo rapido**: Checkbox "Solo da riordinare" per isolare istantaneamente i libri che necessitano di rifornimento.
+- **Ricerca avanzata**: Barra di ricerca istantanea che filtra simultaneamente per Titolo, Autore o Genere.
+- **Architettura containerizzata**: Portabilità totale garantita da Docker Compose.
 
 ### 2. Architettura del progetto
 L'applicazione segue una 3-tier architecture:
-- **frontend** -> React (Vite)
-- **backend** -> Node.js + Express (API REST)
-- **db** -> PostgreSQL
+- **Frontend**: React 19 + Vite
+- **Backend**: Node.js 20 + Express (API REST)
+- **Database**: PostgreSQL 16
 
 ### 3. Database
 Il database viene inizializzato automaticamente tramite Docker.
-- **Tabelle**: `users` (credenziali) e `inventory` (articoli)
-- **Relazione**: un utente può avere più articoli in inventario (1 → N)
+- **Tabelle**: `users` (credenziali) e `inventory` (volumi del catalogo).
+- **Relazione**: un utente può avere più volumi nel proprio catalogo (1 → N), associati tramite `user_id`.
 
 ### 4. Scelte progettuali
-- **React + Vite** → UI moderna e build veloce
-- **Node.js + Express** → API REST leggere e modulari
-- **PostgreSQL** → database relazionale affidabile
-- **JWT + bcrypt** → autenticazione stateless e password criptate
-- **Docker Compose** → portabilità totale del progetto
+- **React + Vite** → UI moderna, reattiva e build veloce.
+- **Node.js + Express** → API REST leggere, modulari e scalabili.
+- **PostgreSQL** → database relazionale affidabile e robusto.
+- **JWT + bcrypt** → autenticazione stateless e massima sicurezza per le password.
+- **Docker Compose** → portabilità totale del progetto (funziona su qualsiasi macchina).
 
 ### 5. Avvio del progetto con Docker
 1. Clona il repository:
-   git clone https://github.com/Fiorans03/inventory-tracker.git
+   git clone git clone https://github.com/Fiorans03/bookstore-tracker.git
    cd inventory-tracker
 
 2. Avvia i container:
@@ -45,12 +45,12 @@ Il database viene inizializzato automaticamente tramite Docker.
    - Backend: http://localhost:3000
 
 ### 6. CI/CD Pipeline
-Il progetto include una pipeline GitHub Actions che si attiva automaticamente ad ogni push sul branch main, eseguendo linting, build del frontend e build delle immagini Docker.
+Il progetto include una pipeline GitHub Actions che si attiva automaticamente ad ogni push sul branch main. La pipeline esegue il checkout del codice, l'installazione delle dipendenze, la verifica della sintassi, la build del frontend e la build delle immagini Docker, garantendo la qualità del codice a ogni modifica.
 
 ### 7. Struttura del progetto
 
 ```text
-inventory-tracker/
+bookstore-tracker/
 ├── backend/
 │   ├── src/
 │   │   ├── config/db.js
