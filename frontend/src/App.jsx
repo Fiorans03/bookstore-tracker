@@ -1,6 +1,23 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 
+// Lista COMPLETA e professionale di generi
+const GENERI_DISPONIBILI = [
+  // Narrativa
+  "Romance", "Giallo", "Thriller", "Horror", 
+  "Fantascienza & Fantasy", "Narrativa Italiana", "Narrativa Straniera", 
+  "Storico", "Avventura", "Manga & Fumetti",
+  // Saggistica e Cultura
+  "Saggi & Divulgazione", "Storia", "Filosofia", "Psicologia", 
+  "Biografie & Memorie", "Arte & Fotografia", "Viaggi",
+  // Accademico e Scuola
+  "Testi Universitari", "Manualistica Scolastica", "Linguistica & Grammatica", 
+  "Dizionari & Enciclopedie", "Preparazione Concorsi",
+  // Hobby e Tempo Libero
+  "Sport & Fitness", "Cucina & Gastronomia", "Fai da te & Bricolage", 
+  "Giochi & Passatempi", "Musica & Cinema", "Tecnologia & Informatica"
+];
+
 function App() {
   const [view, setView] = useState('login');
   const [token, setToken] = useState(localStorage.getItem('token') || '');
@@ -9,7 +26,7 @@ function App() {
   const [registerForm, setRegisterForm] = useState({ username: '', email: '', password: '' });
   
   const [items, setItems] = useState([]);
-  const [form, setForm] = useState({ name: '', category: '', quantity: '', location: '' });
+  const [form, setForm] = useState({ name: '', category: [], quantity: '', location: '', notes: '' });
   const [searchTerm, setSearchTerm] = useState('');
   const [showLowStockOnly, setShowLowStockOnly] = useState(false);
   const [editingId, setEditingId] = useState(null);
@@ -61,22 +78,46 @@ function App() {
     setLoginForm({ email: '', password: '' });
   };
 
+  const toggleGenre = (genere) => {
+    setForm(prev => {
+      const currentGenres = Array.isArray(prev.category) ? prev.category : [];
+      if (currentGenres.includes(genere)) {
+        return { ...prev, category: currentGenres.filter(g => g !== genere) };
+      } else {
+        return { ...prev, category: [...currentGenres, genere] };
+      }
+    });
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      const payload = {
+        ...form,
+        quantity: Number(form.quantity),
+        category: Array.isArray(form.category) ? form.category.join(', ') : form.category
+      };
+
       if (editingId) {
-        await axios.put(`http://localhost:3000/inventory/${editingId}`, { ...form, quantity: Number(form.quantity) });
+        await axios.put(`http://localhost:3000/inventory/${editingId}`, payload);
         setEditingId(null);
       } else {
-        await axios.post('http://localhost:3000/inventory', { ...form, quantity: Number(form.quantity) });
+        await axios.post('http://localhost:3000/inventory', payload);
       }
-      setForm({ name: '', category: '', quantity: '', location: '' });
+      setForm({ name: '', category: [], quantity: '', location: '', notes: '' });
       fetchItems();
     } catch (err) { console.error("Errore salvataggio:", err); }
   };
 
   const handleEdit = (item) => {
-    setForm({ name: item.name, category: item.category, quantity: item.quantity, location: item.location });
+    const genresArray = item.category ? item.category.split(',').map(g => g.trim()) : [];
+    setForm({
+      name: item.name,
+      category: genresArray,
+      quantity: item.quantity,
+      location: item.location,
+      notes: item.notes || ''
+    });
     setEditingId(item.id);
   };
 
@@ -87,13 +128,13 @@ function App() {
     }
   };
 
-  // RICERCA ADATTATA: Cerca per Titolo, Autore (location) o Genere (category)
   const filteredItems = items.filter(item => {
     const term = searchTerm.toLowerCase();
     const matchesSearch = 
       item.name.toLowerCase().includes(term) || 
       (item.location && item.location.toLowerCase().includes(term)) ||
-      item.category.toLowerCase().includes(term);
+      item.category.toLowerCase().includes(term) ||
+      (item.notes && item.notes.toLowerCase().includes(term));
       
     const isLowStock = item.quantity <= item.min_threshold;
     
@@ -148,7 +189,7 @@ function App() {
   }
 
   return (
-    <div style={{ padding: '2rem', fontFamily: 'sans-serif', maxWidth: '900px', margin: '0 auto' }}>
+    <div style={{ padding: '2rem', fontFamily: 'sans-serif', maxWidth: '1000px', margin: '0 auto' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
         <h1 style={{ margin: 0 }}>📚 BookStore Tracker</h1>
         <button onClick={handleLogout} style={{ padding: '0.5rem 1rem', background: '#f44336', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>🚪 Logout</button>
@@ -163,7 +204,7 @@ function App() {
 
       <div style={{ display: 'flex', gap: '1rem', marginBottom: '1rem', alignItems: 'center' }}>
         <input 
-          placeholder="🔍 Cerca per Titolo, Autore o Genere..." 
+          placeholder="🔍 Cerca per Titolo, Autore, Genere o Tipologia..." 
           value={searchTerm} 
           onChange={e => setSearchTerm(e.target.value)} 
           style={{ flex: 1, padding: '0.8rem', borderRadius: '4px', border: '1px solid #ccc', fontSize: '1rem', boxSizing: 'border-box' }} 
@@ -179,25 +220,43 @@ function App() {
         </label>
       </div>
 
-      <form onSubmit={handleSubmit} style={{ display: 'flex', gap: '0.5rem', marginBottom: '2rem', flexWrap: 'wrap', background: '#fafafa', padding: '1rem', borderRadius: '8px', border: '1px solid #e0e0e0' }}>
-        <input placeholder="Titolo del libro" value={form.name} onChange={e => setForm({...form, name: e.target.value})} required style={{ flex: 2, padding: '0.5rem', borderRadius: '4px', border: '1px solid #ccc' }} />
+      <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginBottom: '2rem', background: '#fafafa', padding: '1.2rem', borderRadius: '8px', border: '1px solid #e0e0e0' }}>
         
-        <select value={form.category} onChange={e => setForm({...form, category: e.target.value})} required style={{ flex: 1, padding: '0.5rem', borderRadius: '4px', border: '1px solid #ccc', background: 'white' }}>
-          <option value="" disabled>Seleziona Genere</option>
-          <option value="Narrativa Italiana">📖 Narrativa Italiana</option>
-          <option value="Narrativa Straniera">🌍 Narrativa Straniera</option>
-          <option value="Saggi & Divulgazione">🧠 Saggi & Divulgazione</option>
-          <option value="Fantascienza & Fantasy">🚀 Fantascienza & Fantasy</option>
-          <option value="Gialli & Thriller">🔍 Gialli & Thriller</option>
-          <option value="Bambini & Ragazzi">🧸 Bambini & Ragazzi</option>
-          <option value="Manualistica & Scolastica">🎓 Manualistica</option>
-        </select>
+        <div style={{ display: 'flex', gap: '0.8rem', flexWrap: 'wrap' }}>
+          <input placeholder="Titolo del libro" value={form.name} onChange={e => setForm({...form, name: e.target.value})} required style={{ flex: 2, minWidth: '200px', padding: '0.6rem', borderRadius: '4px', border: '1px solid #ccc' }} />
+          <input placeholder="Autore" value={form.location} onChange={e => setForm({...form, location: e.target.value})} required style={{ flex: 1, minWidth: '150px', padding: '0.6rem', borderRadius: '4px', border: '1px solid #ccc' }} />
+        </div>
 
-        <input placeholder="Autore" value={form.location} onChange={e => setForm({...form, location: e.target.value})} required style={{ flex: 1, padding: '0.5rem', borderRadius: '4px', border: '1px solid #ccc' }} />
-        <input type="number" placeholder="Copie" value={form.quantity} onChange={e => setForm({...form, quantity: e.target.value})} required style={{ width: '90px', padding: '0.5rem', borderRadius: '4px', border: '1px solid #ccc' }} />
-        
-        <button type="submit" style={{ padding: '0.5rem 1rem', background: '#8b4513', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}>{editingId ? '💾 Salva' : '➕ Aggiungi'}</button>
-        {editingId && <button type="button" onClick={() => { setEditingId(null); setForm({ name: '', category: '', quantity: '', location: '' }); }} style={{ padding: '0.5rem 1rem', background: '#9e9e9e', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>Annulla</button>}
+        <div style={{ width: '100%' }}>
+          <label style={{ fontWeight: 'bold', fontSize: '0.9rem', display: 'block', marginBottom: '0.5rem', color: '#333' }}>📚 Generi (puoi sceglierne più di uno):</label>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.6rem' }}>
+            {GENERI_DISPONIBILI.map(genere => (
+              <label key={genere} style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.85rem', cursor: 'pointer', background: '#fff', padding: '0.4rem 0.7rem', borderRadius: '6px', border: '1px solid #ddd', transition: 'all 0.2s' }}>
+                <input
+                  type="checkbox"
+                  checked={(form.category || []).includes(genere)}
+                  onChange={() => toggleGenre(genere)}
+                  style={{ cursor: 'pointer', accentColor: '#8b4513' }}
+                />
+                {genere}
+              </label>
+            ))}
+          </div>
+        </div>
+
+        <div style={{ display: 'flex', gap: '0.8rem', flexWrap: 'wrap', alignItems: 'flex-end' }}>
+          <select value={form.notes} onChange={e => setForm({...form, notes: e.target.value})} style={{ flex: 1, minWidth: '180px', padding: '0.6rem', borderRadius: '4px', border: '1px solid #ccc', background: 'white' }}>
+            <option value="" disabled>Tipologia</option>
+            <option value="Libro">📖 Libro</option>
+            <option value="Fumetto / Graphic Novel">💬 Fumetto / Graphic Novel</option>
+            <option value="Giornale / Stampa periodica">📰 Giornale / Stampa periodica</option>
+          </select>
+
+          <input type="number" placeholder="Copie" value={form.quantity} onChange={e => setForm({...form, quantity: e.target.value})} required style={{ width: '100px', padding: '0.6rem', borderRadius: '4px', border: '1px solid #ccc' }} />
+          
+          <button type="submit" style={{ padding: '0.6rem 1.2rem', background: '#8b4513', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}>{editingId ? '💾 Salva' : '➕ Aggiungi'}</button>
+          {editingId && <button type="button" onClick={() => { setEditingId(null); setForm({ name: '', category: [], quantity: '', location: '', notes: '' }); }} style={{ padding: '0.6rem 1.2rem', background: '#9e9e9e', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>Annulla</button>}
+        </div>
       </form>
 
       <ul style={{ listStyle: 'none', padding: 0 }}>
@@ -209,8 +268,8 @@ function App() {
           filteredItems.map(item => {
             const status = getItemStatus(item.quantity, item.min_threshold);
             return (
-              <li key={item.id} style={{ padding: '1rem', borderBottom: '1px solid #eee', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+              <li key={item.id} style={{ padding: '1rem', borderBottom: '1px solid #eee', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                <div style={{ display: 'flex', alignItems: 'flex-start', gap: '1rem' }}>
                   <div style={{ 
                     background: status.bg, 
                     color: status.color, 
@@ -219,17 +278,25 @@ function App() {
                     fontSize: '0.75rem', 
                     fontWeight: 'bold',
                     minWidth: '110px',
-                    textAlign: 'center'
+                    textAlign: 'center',
+                    marginTop: '0.2rem'
                   }}>
                     {status.label}
                   </div>
                   <div>
-                    <strong style={{ fontSize: '1.1rem' }}>{item.name}</strong><br />
-                    <span style={{ color: '#555' }}>✍️ {item.location} | 📚 {item.category}</span><br />
-                    <span style={{ fontSize: '0.9rem', color: '#777' }}>Copie: {item.quantity} (Soglia min: {item.min_threshold})</span>
+                    <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem' }}>
+                      <strong style={{ fontSize: '1.1rem' }}>{item.name}</strong>
+                      {item.notes && (
+                        <span style={{ fontSize: '0.8rem', background: '#e0e0e0', padding: '2px 8px', borderRadius: '12px', color: '#333', fontWeight: '500' }}>
+                          {item.notes}
+                        </span>
+                      )}
+                    </div>
+                    <span style={{ color: '#555', display: 'block', marginTop: '0.3rem' }}>✍️ {item.location} | 📚 {item.category}</span>
+                    <span style={{ fontSize: '0.9rem', color: '#777', display: 'block', marginTop: '0.2rem' }}>Copie: {item.quantity} (Soglia min: {item.min_threshold})</span>
                   </div>
                 </div>
-                <div style={{ display: 'flex', gap: '0.5rem' }}>
+                <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.2rem' }}>
                   <button onClick={() => handleEdit(item)} style={{ padding: '0.4rem 0.8rem', background: '#ff9800', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>✏️ Modifica</button>
                   <button onClick={() => handleDelete(item.id)} style={{ padding: '0.4rem 0.8rem', background: '#f44336', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>🗑️ Elimina</button>
                 </div>

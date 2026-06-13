@@ -8,7 +8,7 @@ Ho sviluppato un'applicazione web che permette la gestione del catalogo di una l
 ### 1. Funzionalità
 - **Registrazione e login sicuri**: Autenticazione JWT con validazione robusta della password (lunghezza, maiuscole, minuscole, numeri, caratteri speciali) verificata sia lato frontend che backend.
 - **Isolamento dati multi-utente**: Ogni utente visualizza e gestisce esclusivamente il proprio catalogo (Multi-tenancy).
-- **UX avanzata per l'inserimento**: Lista a discesa per i generi, per prevenire errori di battitura e standardizzare i dati.
+- **UX avanzata e catalogazione precisa**: Selezione multipla dei generi (oltre 20 categorie tra narrativa, saggistica, accademico e hobby) e scelta della Tipologia, per una classificazione dei volumi realistica, flessibile e senza errori di battitura.
 - **Monitoraggio scorte granulare**: Indicatore visivo di stato per ogni singolo volume (🟢 DISPONIBILE, 🟡 SCORTA BASSA, 🔴 DA RIORDINARE) basato sulla soglia minima.
 - **Filtro operativo rapido**: Checkbox "Solo da riordinare" per isolare istantaneamente i libri che necessitano di rifornimento.
 - **Ricerca avanzata**: Barra di ricerca istantanea che filtra simultaneamente per Titolo, Autore o Genere.
