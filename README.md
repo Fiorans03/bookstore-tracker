@@ -6,14 +6,13 @@ Inventory tracker è un'applicazione web full-stack per la gestione multi-utente
 Applicazione web che permette la gestione di un inventario personale o professionale tramite autenticazione JWT. Gli utenti possono registrarsi, effettuare login e gestire i propri articoli in modo isolato, con dashboard in tempo reale e alert automatici per le scorte basse.
 
 ### 1. Funzionalità
-- **Registrazione e login utenti** con autenticazione JWT
-- **Validazione sicura**: Regole rigorose per la password (lunghezza minima, maiuscole, minuscole, numeri e    caratteri speciali) verificate sia lato frontend che backend
-- **Isolamento dati multi-utente**: ogni utente visualizza e gestisce esclusivamente il proprio inventario
-- **CRUD completo**: creazione, lettura, modifica e cancellazione articoli
-- **Dashboard intelligente**: metriche in tempo reale su totale oggetti e alert per scorte basse
-- **Barra di ricerca istantanea**: filtro per nome o categoria
-- **Persistenza dati** su PostgreSQL
-- **Architettura containerizzata** con Docker Compose
+- **Registrazione e login sicuri**: Autenticazione JWT con validazione robusta della password (lunghezza, maiuscole, minuscole, numeri, caratteri speciali) sia lato frontend che backend
+- **Isolamento dati multi-utente**: Ogni utente visualizza e gestisce esclusivamente il proprio inventario (Multi-tenancy)
+- **UX Avanzata per l'inserimento**: Lista a discesa per le categorie con icone, per prevenire errori di battitura e standardizzare i dati
+- **Monitoraggio scorte granulare**: Indicatore visivo di stato per ogni singolo articolo (🟢 OK, 🟡 ATTENZIONE, 🔴 CRITICO) basato sulla soglia minima
+- **Filtro operativo rapido**: Checkbox "Solo in esaurimento" per isolare istantaneamente le merci che necessitano di riordino
+- **CRUD completo e Ricerca**: Creazione, lettura, modifica ed eliminazione articoli con barra di ricerca istantanea per nome o categoria
+- **Architettura containerizzata**: Portabilità totale garantita da Docker Compose
 
 ### 2. Architettura del progetto
 L'applicazione segue una 3-tier architecture:
