@@ -1,19 +1,14 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 
-// Lista COMPLETA e professionale di generi
 const GENERI_DISPONIBILI = [
-  // Narrativa
   "Romance", "Giallo", "Thriller", "Horror", 
   "Fantascienza & Fantasy", "Narrativa Italiana", "Narrativa Straniera", 
   "Storico", "Avventura", "Manga & Fumetti",
-  // Saggistica e Cultura
   "Saggi & Divulgazione", "Storia", "Filosofia", "Psicologia", 
   "Biografie & Memorie", "Arte & Fotografia", "Viaggi",
-  // Accademico e Scuola
   "Testi Universitari", "Manualistica Scolastica", "Linguistica & Grammatica", 
   "Dizionari & Enciclopedie", "Preparazione Concorsi",
-  // Hobby e Tempo Libero
   "Sport & Fitness", "Cucina & Gastronomia", "Fai da te & Bricolage", 
   "Giochi & Passatempi", "Musica & Cinema", "Tecnologia & Informatica"
 ];
@@ -221,7 +216,6 @@ function App() {
       </div>
 
       <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginBottom: '2rem', background: '#fafafa', padding: '1.2rem', borderRadius: '8px', border: '1px solid #e0e0e0' }}>
-        
         <div style={{ display: 'flex', gap: '0.8rem', flexWrap: 'wrap' }}>
           <input placeholder="Titolo del libro" value={form.name} onChange={e => setForm({...form, name: e.target.value})} required style={{ flex: 2, minWidth: '200px', padding: '0.6rem', borderRadius: '4px', border: '1px solid #ccc' }} />
           <input placeholder="Autore" value={form.location} onChange={e => setForm({...form, location: e.target.value})} required style={{ flex: 1, minWidth: '150px', padding: '0.6rem', borderRadius: '4px', border: '1px solid #ccc' }} />
@@ -231,13 +225,8 @@ function App() {
           <label style={{ fontWeight: 'bold', fontSize: '0.9rem', display: 'block', marginBottom: '0.5rem', color: '#333' }}>📚 Generi (puoi sceglierne più di uno):</label>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.6rem' }}>
             {GENERI_DISPONIBILI.map(genere => (
-              <label key={genere} style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.85rem', cursor: 'pointer', background: '#fff', padding: '0.4rem 0.7rem', borderRadius: '6px', border: '1px solid #ddd', transition: 'all 0.2s' }}>
-                <input
-                  type="checkbox"
-                  checked={(form.category || []).includes(genere)}
-                  onChange={() => toggleGenre(genere)}
-                  style={{ cursor: 'pointer', accentColor: '#8b4513' }}
-                />
+              <label key={genere} style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.85rem', cursor: 'pointer', background: '#fff', padding: '0.4rem 0.7rem', borderRadius: '6px', border: '1px solid #ddd' }}>
+                <input type="checkbox" checked={(form.category || []).includes(genere)} onChange={() => toggleGenre(genere)} style={{ cursor: 'pointer', accentColor: '#8b4513' }} />
                 {genere}
               </label>
             ))}
@@ -251,9 +240,7 @@ function App() {
             <option value="Fumetto / Graphic Novel">💬 Fumetto / Graphic Novel</option>
             <option value="Giornale / Stampa periodica">📰 Giornale / Stampa periodica</option>
           </select>
-
           <input type="number" placeholder="Copie" value={form.quantity} onChange={e => setForm({...form, quantity: e.target.value})} required style={{ width: '100px', padding: '0.6rem', borderRadius: '4px', border: '1px solid #ccc' }} />
-          
           <button type="submit" style={{ padding: '0.6rem 1.2rem', background: '#8b4513', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}>{editingId ? '💾 Salva' : '➕ Aggiungi'}</button>
           {editingId && <button type="button" onClick={() => { setEditingId(null); setForm({ name: '', category: [], quantity: '', location: '', notes: '' }); }} style={{ padding: '0.6rem 1.2rem', background: '#9e9e9e', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>Annulla</button>}
         </div>
@@ -271,29 +258,28 @@ function App() {
               <li key={item.id} style={{ padding: '1rem', borderBottom: '1px solid #eee', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                 <div style={{ display: 'flex', alignItems: 'flex-start', gap: '1rem' }}>
                   <div style={{ 
-                    background: status.bg, 
-                    color: status.color, 
-                    padding: '0.3rem 0.6rem', 
-                    borderRadius: '20px', 
-                    fontSize: '0.75rem', 
-                    fontWeight: 'bold',
-                    minWidth: '110px',
-                    textAlign: 'center',
-                    marginTop: '0.2rem'
+                    background: status.bg, color: status.color, padding: '0.3rem 0.6rem', borderRadius: '20px', 
+                    fontSize: '0.75rem', fontWeight: 'bold', minWidth: '110px', textAlign: 'center', marginTop: '0.2rem'
                   }}>
                     {status.label}
                   </div>
                   <div>
-                    <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem' }}>
+                    {/* RIGA 1: Titolo e Tipologia affiancati */}
+                    <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '0.2rem' }}>
                       <strong style={{ fontSize: '1.1rem' }}>{item.name}</strong>
                       {item.notes && (
-                        <span style={{ fontSize: '0.8rem', background: '#e0e0e0', padding: '2px 8px', borderRadius: '12px', color: '#333', fontWeight: '500' }}>
+                        <span style={{ fontSize: '0.75rem', background: '#d7ccc8', color: '#3e2723', padding: '2px 8px', borderRadius: '12px', fontWeight: '600', border: '1px solid #bcaaa4' }}>
                           {item.notes}
                         </span>
                       )}
                     </div>
-                    <span style={{ color: '#555', display: 'block', marginTop: '0.3rem' }}>✍️ {item.location} | 📚 {item.category}</span>
-                    <span style={{ fontSize: '0.9rem', color: '#777', display: 'block', marginTop: '0.2rem' }}>Copie: {item.quantity} (Soglia min: {item.min_threshold})</span>
+                    {/* RIGA 2: Autore */}
+                    <span style={{ color: '#555', display: 'block', fontSize: '0.95rem' }}>✍️ {item.location}</span>
+                    {/* RIGA 3: Generi e Copie */}
+                    <div style={{ display: 'flex', gap: '1rem', marginTop: '0.3rem', fontSize: '0.85rem', color: '#777' }}>
+                      <span>📚 {item.category}</span>
+                      <span>📦 Copie: {item.quantity} (Min: {item.min_threshold})</span>
+                    </div>
                   </div>
                 </div>
                 <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.2rem' }}>
