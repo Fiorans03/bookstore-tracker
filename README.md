@@ -48,6 +48,8 @@ Il database viene inizializzato automaticamente tramite Docker.
 Il progetto include una pipeline GitHub Actions che si attiva automaticamente ad ogni push sul branch main, eseguendo linting, build del frontend e build delle immagini Docker.
 
 ### 7. Struttura del progetto
+
+```text
 inventory-tracker/
 ├── backend/
 │   ├── src/
@@ -61,7 +63,9 @@ inventory-tracker/
 ├── db/init.sql
 ├── .github/workflows/ci.yml
 ├── docker-compose.yml
+├── .env
 └── README.md
+```
 
 Autore: Fiorans03
 Tecnologie utilizzate: React, Node.js, Express, PostgreSQL, Docker, GitHub Actions
