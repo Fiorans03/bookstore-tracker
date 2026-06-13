@@ -1,5 +1,5 @@
 {
-  "name": "inventory-tracker-backend",
+  "name": "bookstore-tracker-backend",
   "version": "1.0.0",
   "type": "module",
   "main": "index.js",
@@ -11,7 +11,7 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": "Backend API per Inventory Tracker",
+  "description": "Backend API per Bookstore Tracker",
   "dependencies": {
     "bcrypt": "^6.0.0",
     "cors": "^2.8.6",
