@@ -71,6 +71,9 @@ function App() {
     setToken('');
     setView('login');
     setLoginForm({ email: '', password: '' });
+    // Resetta il form e lo stato di modifica al logout
+    setForm({ name: '', category: [], quantity: '', location: '', notes: '' });
+    setEditingId(null);
   };
 
   const toggleGenre = (genere) => {
@@ -90,7 +93,8 @@ function App() {
       const payload = {
         ...form,
         quantity: Number(form.quantity),
-        category: Array.isArray(form.category) ? form.category.join(', ') : form.category
+        // Unisce i generi con virgola (es. "Giallo, Thriller, Storia")
+        category: (Array.isArray(form.category) && form.category.length > 0) ? form.category.join(', ') : 'Varie'
       };
 
       if (editingId) {
@@ -99,12 +103,17 @@ function App() {
       } else {
         await axios.post('http://localhost:3000/inventory', payload);
       }
+      // Resetta sempre il form dopo il salvataggio riuscito
       setForm({ name: '', category: [], quantity: '', location: '', notes: '' });
       fetchItems();
-    } catch (err) { console.error("Errore salvataggio:", err); }
+    } catch (err) { 
+      console.error("Errore salvataggio:", err);
+      alert("Errore nel salvataggio: " + (err.response?.data?.error || "Controlla i dati inseriti."));
+    }
   };
 
   const handleEdit = (item) => {
+    // Converte la stringa salvata ("Giallo, Thriller") in array per le checkbox
     const genresArray = item.category ? item.category.split(',').map(g => g.trim()) : [];
     setForm({
       name: item.name,
@@ -125,6 +134,7 @@ function App() {
 
   const filteredItems = items.filter(item => {
     const term = searchTerm.toLowerCase();
+    // La ricerca controlla TUTTI i generi salvati, non solo il primo
     const matchesSearch = 
       item.name.toLowerCase().includes(term) || 
       (item.location && item.location.toLowerCase().includes(term)) ||
@@ -258,6 +268,9 @@ function App() {
         ) : (
           filteredItems.map(item => {
             const status = getItemStatus(item.quantity, item.min_threshold);
+            // 💡 IDEA GENIALE: Prendi solo il PRIMO genere della lista per visualizzarlo
+            const mainGenre = item.category ? item.category.split(',')[0].trim() : 'Varie';
+            
             return (
               <li key={item.id} style={{ padding: '1rem', borderBottom: '1px solid #eee', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                 <div style={{ display: 'flex', alignItems: 'flex-start', gap: '1rem' }}>
@@ -267,7 +280,7 @@ function App() {
                   }}>
                     {status.label}
                   </div>
-                  <div>
+                  <div style={{ flex: 1 }}>
                     <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '0.2rem' }}>
                       <strong style={{ fontSize: '1.1rem' }}>{item.name}</strong>
                       {item.notes && (
@@ -277,8 +290,10 @@ function App() {
                       )}
                     </div>
                     <span style={{ color: '#555', display: 'block', fontSize: '0.95rem' }}>✍️ {item.location}</span>
-                    <div style={{ display: 'flex', gap: '1rem', marginTop: '0.3rem', fontSize: '0.85rem', color: '#777' }}>
-                      <span>📚 {item.category}</span>
+                    
+                    {/* Visualizza SOLO il genere principale, mantenendo il layout pulito */}
+                    <div style={{ display: 'flex', gap: '1rem', marginTop: '0.4rem', fontSize: '0.85rem', color: '#777' }}>
+                      <span>📚 {mainGenre}</span>
                       <span>📦 Copie: {item.quantity} (Min: {item.min_threshold})</span>
                     </div>
                   </div>

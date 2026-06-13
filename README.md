@@ -6,7 +6,7 @@ BookStore Tracker è un'applicazione web full-stack per la gestione multi-utente
 Ho sviluppato un'applicazione web che permette la gestione del catalogo di una libreria tramite autenticazione JWT. Gli utenti possono registrarsi, effettuare login e gestire i propri volumi in modo isolato, con dashboard in tempo reale e alert automatici per i libri da riordinare.
 
 ### 1. Funzionalità
-- **Registrazione e login sicuri**: Autenticazione JWT con validazione robusta della password (lunghezza, maiuscole, minuscole, numeri, caratteri speciali) verificata sia lato frontend che backend.
+- **UX avanzata e catalogazione precisa**: Selezione multipla dei generi (oltre 20 categorie) con visualizzazione in lista del solo genere principale per massima pulizia visiva, mantenendo comunque la ricercabilità completa su tutti i generi associati al volume.
 - **Isolamento dati multi-utente**: Ogni utente visualizza e gestisce esclusivamente il proprio catalogo (Multi-tenancy).
 - **UX avanzata e catalogazione precisa**: Selezione multipla dei generi (oltre 20 categorie tra narrativa, saggistica, accademico e hobby) e scelta della Tipologia, per una classificazione dei volumi realistica, flessibile e senza errori di battitura.
 - **Monitoraggio scorte granulare**: Indicatore visivo di stato per ogni singolo volume (🟢 DISPONIBILE, 🟡 SCORTA BASSA, 🔴 DA RIORDINARE) basato sulla soglia minima.
