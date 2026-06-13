@@ -216,11 +216,19 @@ function App() {
       </div>
 
       <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginBottom: '2rem', background: '#fafafa', padding: '1.2rem', borderRadius: '8px', border: '1px solid #e0e0e0' }}>
+        
+        {/* RIGA 1: Titolo + Tipologia */}
         <div style={{ display: 'flex', gap: '0.8rem', flexWrap: 'wrap' }}>
           <input placeholder="Titolo del libro" value={form.name} onChange={e => setForm({...form, name: e.target.value})} required style={{ flex: 2, minWidth: '200px', padding: '0.6rem', borderRadius: '4px', border: '1px solid #ccc' }} />
-          <input placeholder="Autore" value={form.location} onChange={e => setForm({...form, location: e.target.value})} required style={{ flex: 1, minWidth: '150px', padding: '0.6rem', borderRadius: '4px', border: '1px solid #ccc' }} />
+          <select value={form.notes} onChange={e => setForm({...form, notes: e.target.value})} style={{ flex: 1, minWidth: '180px', padding: '0.6rem', borderRadius: '4px', border: '1px solid #ccc', background: 'white' }}>
+            <option value="" disabled>Tipologia</option>
+            <option value="Libro">📖 Libro</option>
+            <option value="Fumetto / Graphic Novel">💬 Fumetto / Graphic Novel</option>
+            <option value="Giornale / Stampa periodica">📰 Giornale / Stampa periodica</option>
+          </select>
         </div>
 
+        {/* RIGA 2: Generi (checkbox multiple) */}
         <div style={{ width: '100%' }}>
           <label style={{ fontWeight: 'bold', fontSize: '0.9rem', display: 'block', marginBottom: '0.5rem', color: '#333' }}>📚 Generi (puoi sceglierne più di uno):</label>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.6rem' }}>
@@ -233,13 +241,9 @@ function App() {
           </div>
         </div>
 
+        {/* RIGA 3: Autore + Copie + Bottoni */}
         <div style={{ display: 'flex', gap: '0.8rem', flexWrap: 'wrap', alignItems: 'flex-end' }}>
-          <select value={form.notes} onChange={e => setForm({...form, notes: e.target.value})} style={{ flex: 1, minWidth: '180px', padding: '0.6rem', borderRadius: '4px', border: '1px solid #ccc', background: 'white' }}>
-            <option value="" disabled>Tipologia</option>
-            <option value="Libro">📖 Libro</option>
-            <option value="Fumetto / Graphic Novel">💬 Fumetto / Graphic Novel</option>
-            <option value="Giornale / Stampa periodica">📰 Giornale / Stampa periodica</option>
-          </select>
+          <input placeholder="Autore" value={form.location} onChange={e => setForm({...form, location: e.target.value})} required style={{ flex: 2, minWidth: '200px', padding: '0.6rem', borderRadius: '4px', border: '1px solid #ccc' }} />
           <input type="number" placeholder="Copie" value={form.quantity} onChange={e => setForm({...form, quantity: e.target.value})} required style={{ width: '100px', padding: '0.6rem', borderRadius: '4px', border: '1px solid #ccc' }} />
           <button type="submit" style={{ padding: '0.6rem 1.2rem', background: '#8b4513', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}>{editingId ? '💾 Salva' : '➕ Aggiungi'}</button>
           {editingId && <button type="button" onClick={() => { setEditingId(null); setForm({ name: '', category: [], quantity: '', location: '', notes: '' }); }} style={{ padding: '0.6rem 1.2rem', background: '#9e9e9e', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>Annulla</button>}
@@ -264,7 +268,6 @@ function App() {
                     {status.label}
                   </div>
                   <div>
-                    {/* RIGA 1: Titolo e Tipologia affiancati */}
                     <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '0.2rem' }}>
                       <strong style={{ fontSize: '1.1rem' }}>{item.name}</strong>
                       {item.notes && (
@@ -273,9 +276,7 @@ function App() {
                         </span>
                       )}
                     </div>
-                    {/* RIGA 2: Autore */}
                     <span style={{ color: '#555', display: 'block', fontSize: '0.95rem' }}>✍️ {item.location}</span>
-                    {/* RIGA 3: Generi e Copie */}
                     <div style={{ display: 'flex', gap: '1rem', marginTop: '0.3rem', fontSize: '0.85rem', color: '#777' }}>
                       <span>📚 {item.category}</span>
                       <span>📦 Copie: {item.quantity} (Min: {item.min_threshold})</span>
