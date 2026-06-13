@@ -1,104 +1,67 @@
-Task Manager App
-Web application full-stack minimal per la gestione di task con autenticazione utenti. Il progetto è completamente containerizzato tramite Docker Compose ed è pensato per essere eseguibile su qualsiasi macchina senza configurazioni manuali complesse.
+# Inventory Tracker
 
-Progetto
-Applicazione web minimale che permette la gestione di task personali tramite autenticazione JWT.
+Applicazione web full-stack per la gestione multi-utente di un inventario con monitoraggio delle scorte in tempo reale. Il progetto è completamente containerizzato tramite Docker Compose.
 
-Gli utenti possono registrarsi, effettuare login e gestire le proprie task in modo isolato.
+## Progetto
+Applicazione web che permette la gestione di un inventario personale o professionale tramite autenticazione JWT. Gli utenti possono registrarsi, effettuare login e gestire i propri articoli in modo isolato, con dashboard in tempo reale e alert automatici per le scorte basse.
 
-1. Funzionalità
-Registrazione e login utenti
-Autenticazione tramite JWT
-Creazione, modifica e cancellazione task
-Associazione task → utente
-Visualizzazione task personali
-Persistenza dati su PostgreSQL
-Architettura containerizzata
-2. Architettura del progetto
+### 1. Funzionalità
+- **Registrazione e login utenti** con autenticazione JWT
+- **Isolamento dati multi-utente**: ogni utente visualizza e gestisce esclusivamente il proprio inventario
+- **CRUD completo**: creazione, lettura, modifica e cancellazione articoli
+- **Dashboard intelligente**: metriche in tempo reale su totale oggetti e alert per scorte basse
+- **Barra di ricerca istantanea**: filtro per nome o categoria
+- **Persistenza dati** su PostgreSQL
+- **Architettura containerizzata** con Docker Compose
+
+### 2. Architettura del progetto
 L'applicazione segue una 3-tier architecture:
+- **frontend** -> React (Vite)
+- **backend** -> Node.js + Express (API REST)
+- **db** -> PostgreSQL
 
-frontend -> React (Vite) servito tramite Nginx
-backend -> Node.js + Express (API REST)
-db -> PostgreSQL
-La comunicazione avviene tramite API REST tra frontend e backend, mentre il backend si occupa di comunicare con il database.
+### 3. Database
+Il database viene inizializzato automaticamente tramite Docker.
+- **Tabelle**: `users` (credenziali) e `inventory` (articoli)
+- **Relazione**: un utente può avere più articoli in inventario (1 → N)
 
-Diagramma Architetturale
-Diagramma Architetturale
+### 4. Scelte progettuali
+- **React + Vite** → UI moderna e build veloce
+- **Node.js + Express** → API REST leggere e modulari
+- **PostgreSQL** → database relazionale affidabile
+- **JWT + bcrypt** → autenticazione stateless e password criptate
+- **Docker Compose** → portabilità totale del progetto
 
-3. Database
-Il database viene inizializzato automaticamente tramite Docker:
+### 5. Avvio del progetto con Docker
+1. Clona il repository:
+   git clone https://github.com/Fiorans03/inventory-tracker.git
+   cd inventory-tracker
 
-Tabelle presenti:
+2. Avvia i container:
+   docker compose up --build
 
-users
-tasks
-Relazione:
+3. I servizi disponibili sono:
+   - Frontend: http://localhost:5173
+   - Backend: http://localhost:3000
 
-un utente può avere più task (1 -> N)
-4. Scelte progettuali
-React + Vite → UI moderna e build veloce
-Node.js + Express → API REST leggere e modulari
-PostgreSQL → database relazionale affidabile
-JWT → autenticazione stateless
-Docker Compose → portabilità totale del progetto
-Nginx → serving della build frontend
-5. Prerequisiti
-Per eseguire il progetto è necessario aver installato:
+### 6. CI/CD Pipeline
+Il progetto include una pipeline GitHub Actions che si attiva automaticamente ad ogni push sul branch main, eseguendo linting, build del frontend e build delle immagini Docker.
 
-Docker Desktop
-Git
-6. Avvio del progetto con Docker
-1. Clona il repository
-git clone https://github.com/alygorithm/task-manager-app.git
-cd task-manager-app
-Configurare ambiente
-Copia il file di esempio:
+### 7. Struttura del progetto
+inventory-tracker/
+├── backend/
+│   ├── src/
+│   │   ├── config/db.js
+│   │   ├── routes/ (auth.routes.js, inventory.routes.js)
+│   │   └── app.js
+│   └── package.json
+├── frontend/
+│   ├── src/App.jsx
+│   └── package.json
+├── db/init.sql
+├── .github/workflows/ci.yml
+├── docker-compose.yml
+└── README.md
 
-cp .env.example .env
-Il file .env deve contenere:
-
-PORT=3000
-
-DB_HOST=db
-DB_PORT=5432
-DB_USER=postgres
-DB_PASSWORD=postgres
-DB_NAME=taskdb
-
-JWT_SECRET=change_me
-JWT_SECRET rappresenta la chiave utilizzata per firmare i token JWT.
-Nel contesto di sviluppo locale può essere qualsiasi stringa.
-
-Avvio dei container
-docker compose up --build
-Servizi disponibili
-Frontend → http://localhost:5173
-Backend → http://localhost:3000
-Reset ambiente (opzionale)
-Per eliminare del tutto il database e ripartire da zero:
-
-docker compose down -v
-7. Avvio in locale (senza Docker)
-Questa modalità è solo per sviluppo avanzato e non è la modalità principale del progetto.
-
-Il progetto è pensato principalmente per essere eseguito tramite Docker Compose.
-
-L’avvio manuale è possibile ma richiede una configurazione aggiuntiva.
-
-Requisiti aggiuntivi
-Node.js 18+
-PostgreSQL installato ed in esecuzione localmente
-Database taskdb già creato
-Configurazione backend
-Nel file .env locale modificare:
-
-DB_HOST=127.0.0.1
-Avvio backend
-cd backend
-npm install
-npm run dev
-Avvio frontend
-cd frontend
-npm install
-npm run dev
-In modalità manuale il database e le relative tabelle devono essere inizializzati manualmente tramite lo script init.sql
+Autore: Fiorans03
+Tecnologie utilizzate: React, Node.js, Express, PostgreSQL, Docker, GitHub Actions
