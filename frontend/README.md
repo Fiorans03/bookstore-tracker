@@ -34,7 +34,6 @@ Il database viene inizializzato automaticamente tramite Docker.
 
 ### 5. Avvio del progetto con Docker
 1. Clona il repository:
-   ```bash
    git clone https://github.com/Fiorans03/inventory-tracker.git
    cd inventory-tracker
 
