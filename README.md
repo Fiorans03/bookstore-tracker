@@ -1,12 +1,13 @@
 # Inventory Tracker
 
-Applicazione web full-stack per la gestione multi-utente di un inventario con monitoraggio delle scorte in tempo reale. Il progetto è completamente containerizzato tramite Docker Compose.
+Inventory tracker è un'applicazione web full-stack per la gestione multi-utente di un inventario con monitoraggio delle scorte in tempo reale. Il progetto è completamente containerizzato tramite Docker Compose.
 
 ## Progetto
 Applicazione web che permette la gestione di un inventario personale o professionale tramite autenticazione JWT. Gli utenti possono registrarsi, effettuare login e gestire i propri articoli in modo isolato, con dashboard in tempo reale e alert automatici per le scorte basse.
 
 ### 1. Funzionalità
 - **Registrazione e login utenti** con autenticazione JWT
+- **Validazione sicura**: Regole rigorose per la password (lunghezza minima, maiuscole, minuscole, numeri e    caratteri speciali) verificate sia lato frontend che backend
 - **Isolamento dati multi-utente**: ogni utente visualizza e gestisce esclusivamente il proprio inventario
 - **CRUD completo**: creazione, lettura, modifica e cancellazione articoli
 - **Dashboard intelligente**: metriche in tempo reale su totale oggetti e alert per scorte basse

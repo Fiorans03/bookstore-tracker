@@ -39,7 +39,7 @@ function App() {
       setToken(newToken);
       setView('inventory');
     } catch (err) {
-      alert("Login fallito: controlla email e password");
+      alert(err.response?.data?.error || "Login fallito: controlla email e password");
     }
   };
 
@@ -49,8 +49,11 @@ function App() {
       await axios.post('http://localhost:3000/auth/register', registerForm);
       alert("Registrazione avvenuta con successo! Ora effettua il login.");
       setView('login');
+      setRegisterForm({ username: '', email: '', password: '' });
     } catch (err) {
-      alert("Registrazione fallita: l'email o lo username potrebbero essere già in uso.");
+      // Mostra l'errore specifico dal backend (es. regole password)
+      const errorMsg = err.response?.data?.error || "Registrazione fallita.";
+      alert(errorMsg);
     }
   };
 
@@ -61,7 +64,7 @@ function App() {
     setLoginForm({ email: '', password: '' });
   };
 
-  // --- FUNZIONI INVENTARIO (come prima) ---
+  // --- FUNZIONI INVENTARIO ---
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -99,32 +102,47 @@ function App() {
   // --- RENDER CONDIZIONALE ---
   if (!token) {
     return (
-      <div style={{ maxWidth: '400px', margin: '4rem auto', padding: '2rem', border: '1px solid #ddd', borderRadius: '8px', fontFamily: 'sans-serif', textAlign: 'center' }}>
+      <div style={{ maxWidth: '450px', margin: '4rem auto', padding: '2rem', border: '1px solid #ddd', borderRadius: '8px', fontFamily: 'sans-serif', textAlign: 'center' }}>
         <h2>📦 Inventory Tracker</h2>
         <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', marginBottom: '1.5rem' }}>
-          <button onClick={() => setView('login')} style={{ fontWeight: view === 'login' ? 'bold' : 'normal', background: 'none', border: 'none', borderBottom: view === 'login' ? '2px solid blue' : 'none', cursor: 'pointer' }}>Accedi</button>
-          <button onClick={() => setView('register')} style={{ fontWeight: view === 'register' ? 'bold' : 'normal', background: 'none', border: 'none', borderBottom: view === 'register' ? '2px solid blue' : 'none', cursor: 'pointer' }}>Registrati</button>
+          <button onClick={() => setView('login')} style={{ fontWeight: view === 'login' ? 'bold' : 'normal', background: 'none', border: 'none', borderBottom: view === 'login' ? '2px solid blue' : 'none', cursor: 'pointer', fontSize: '1rem' }}>Accedi</button>
+          <button onClick={() => setView('register')} style={{ fontWeight: view === 'register' ? 'bold' : 'normal', background: 'none', border: 'none', borderBottom: view === 'register' ? '2px solid blue' : 'none', cursor: 'pointer', fontSize: '1rem' }}>Registrati</button>
         </div>
 
         {view === 'login' ? (
           <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-            <input placeholder="Email" type="email" value={loginForm.email} onChange={e => setLoginForm({...loginForm, email: e.target.value})} required style={{ padding: '0.5rem' }} />
-            <input placeholder="Password" type="password" value={loginForm.password} onChange={e => setLoginForm({...loginForm, password: e.target.value})} required style={{ padding: '0.5rem' }} />
-            <button type="submit" style={{ padding: '0.7rem', background: '#1976d2', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}>Entra</button>
+            <input placeholder="Email" type="email" value={loginForm.email} onChange={e => setLoginForm({...loginForm, email: e.target.value})} required style={{ padding: '0.6rem', borderRadius: '4px', border: '1px solid #ccc' }} />
+            <input placeholder="Password" type="password" value={loginForm.password} onChange={e => setLoginForm({...loginForm, password: e.target.value})} required style={{ padding: '0.6rem', borderRadius: '4px', border: '1px solid #ccc' }} />
+            <button type="submit" style={{ padding: '0.7rem', background: '#1976d2', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold', fontSize: '1rem' }}>Entra</button>
           </form>
         ) : (
           <form onSubmit={handleRegister} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-            <input placeholder="Username" value={registerForm.username} onChange={e => setRegisterForm({...registerForm, username: e.target.value})} required style={{ padding: '0.5rem' }} />
-            <input placeholder="Email" type="email" value={registerForm.email} onChange={e => setRegisterForm({...registerForm, email: e.target.value})} required style={{ padding: '0.5rem' }} />
-            <input placeholder="Password" type="password" value={registerForm.password} onChange={e => setRegisterForm({...registerForm, password: e.target.value})} required style={{ padding: '0.5rem' }} />
-            <button type="submit" style={{ padding: '0.7rem', background: '#2e7d32', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}>Crea Account</button>
+            <input placeholder="Username" value={registerForm.username} onChange={e => setRegisterForm({...registerForm, username: e.target.value})} required style={{ padding: '0.6rem', borderRadius: '4px', border: '1px solid #ccc' }} />
+            <input placeholder="Email" type="email" value={registerForm.email} onChange={e => setRegisterForm({...registerForm, email: e.target.value})} required style={{ padding: '0.6rem', borderRadius: '4px', border: '1px solid #ccc' }} />
+            <input placeholder="Password" type="password" value={registerForm.password} onChange={e => setRegisterForm({...registerForm, password: e.target.value})} required style={{ padding: '0.6rem', borderRadius: '4px', border: '1px solid #ccc' }} />
+            
+            {/* REGOLE PASSWORD VISIBILI */}
+            <div style={{ background: '#f5f5f5', padding: '0.8rem', borderRadius: '4px', fontSize: '0.85rem', color: '#555', textAlign: 'left' }}>
+              <strong>🔒 Requisiti password:</strong>
+              <ul style={{ margin: '0.5rem 0 0 1.5rem', lineHeight: '1.6' }}>
+                <li>Minimo 8 caratteri</li>
+                <li>Almeno una lettera maiuscola (A-Z)</li>
+                <li>Almeno una lettera minuscola (a-z)</li>
+                <li>Almeno un numero (0-9)</li>
+                <li>Almeno un carattere speciale (!@#$%^&*...)</li>
+              </ul>
+            </div>
+            
+            <button type="submit" style={{ padding: '0.7rem', background: '#2e7d32', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold', fontSize: '1rem' }}>
+              Crea Account
+            </button>
           </form>
         )}
       </div>
     );
   }
 
-  // Se c'è il token, mostra l'inventario (lo stesso codice di prima, con in più il pulsante Logout)
+  // Se c'è il token, mostra l'inventario
   return (
     <div style={{ padding: '2rem', fontFamily: 'sans-serif', maxWidth: '800px', margin: '0 auto' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
@@ -146,10 +164,10 @@ function App() {
       <input placeholder="🔍 Cerca per nome o categoria..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} style={{ width: '100%', padding: '0.8rem', marginBottom: '1rem', borderRadius: '4px', border: '1px solid #ccc', fontSize: '1rem', boxSizing: 'border-box' }} />
 
       <form onSubmit={handleSubmit} style={{ display: 'flex', gap: '0.5rem', marginBottom: '2rem', flexWrap: 'wrap', background: '#f9f9f9', padding: '1rem', borderRadius: '8px' }}>
-        <input placeholder="Nome" value={form.name} onChange={e => setForm({...form, name: e.target.value})} required style={{ flex: 2, padding: '0.5rem' }} />
-        <input placeholder="Categoria" value={form.category} onChange={e => setForm({...form, category: e.target.value})} style={{ flex: 1, padding: '0.5rem' }} />
-        <input type="number" placeholder="Qtà" value={form.quantity} onChange={e => setForm({...form, quantity: e.target.value})} required style={{ width: '80px', padding: '0.5rem' }} />
-        <input placeholder="Posizione" value={form.location} onChange={e => setForm({...form, location: e.target.value})} style={{ flex: 1, padding: '0.5rem' }} />
+        <input placeholder="Nome" value={form.name} onChange={e => setForm({...form, name: e.target.value})} required style={{ flex: 2, padding: '0.5rem', borderRadius: '4px', border: '1px solid #ccc' }} />
+        <input placeholder="Categoria" value={form.category} onChange={e => setForm({...form, category: e.target.value})} style={{ flex: 1, padding: '0.5rem', borderRadius: '4px', border: '1px solid #ccc' }} />
+        <input type="number" placeholder="Qtà" value={form.quantity} onChange={e => setForm({...form, quantity: e.target.value})} required style={{ width: '80px', padding: '0.5rem', borderRadius: '4px', border: '1px solid #ccc' }} />
+        <input placeholder="Posizione" value={form.location} onChange={e => setForm({...form, location: e.target.value})} style={{ flex: 1, padding: '0.5rem', borderRadius: '4px', border: '1px solid #ccc' }} />
         <button type="submit" style={{ padding: '0.5rem 1rem', background: '#1976d2', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}>{editingId ? '💾 Salva' : '➕ Aggiungi'}</button>
         {editingId && <button type="button" onClick={() => { setEditingId(null); setForm({ name: '', category: '', quantity: '', location: '' }); }} style={{ padding: '0.5rem 1rem', background: '#9e9e9e', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>Annulla</button>}
       </form>
