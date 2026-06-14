@@ -1,4 +1,3 @@
-/* Reset di base */
 * {
   box-sizing: border-box;
   margin: 0;
@@ -7,17 +6,15 @@
 
 body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  /* Immagine di una biblioteca classica da Unsplash (gratuita e sempre online) */
   background-image: url('https://images.unsplash.com/photo-1507842217343-583bb7270b66?q=80&w=1920&auto=format&fit=crop');
   background-size: cover;
   background-position: center;
-  background-attachment: fixed; /* L'immagine resta ferma mentre scorri la pagina */
+  background-attachment: fixed;
   background-repeat: no-repeat;
   min-height: 100vh;
   color: #333;
 }
 
-/* Overlay caldo e sfocato per garantire la leggibilità del testo */
 body::before {
   content: '';
   position: fixed;
@@ -25,16 +22,15 @@ body::before {
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(30, 20, 10, 0.75); /* Tinta marrone scuro semi-trasparente */
-  backdrop-filter: blur(4px); /* Sfocatura elegante dello sfondo */
+  background: rgba(30, 20, 10, 0.75);
+  backdrop-filter: blur(4px);
   z-index: -1;
 }
 
-/* Classe per l'effetto "Vetro Smerigliato" (Glassmorphism) */
 .glass-panel {
-  background: rgba(255, 253, 245, 0.92); /* Crema chiarissimo semi-trasparente */
+  background: rgba(255, 253, 245, 0.92);
   backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px); /* Per compatibilità Safari */
+  -webkit-backdrop-filter: blur(12px);
   border-radius: 16px;
   border: 1px solid rgba(255, 255, 255, 0.4);
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);

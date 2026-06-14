@@ -3,7 +3,6 @@ import cors from "cors";
 import dotenv from "dotenv";
 
 import authRoutes from "./routes/auth.routes.js";
-import taskRoutes from "./routes/task.routes.js";
 import inventoryRoutes from "./routes/inventory.routes.js";
 
 dotenv.config({ path: ".env" });
@@ -15,9 +14,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// routes
 app.use("/auth", authRoutes);
-app.use("/tasks", taskRoutes);
 app.use("/inventory", inventoryRoutes);
 
 app.get("/", (req, res) => {

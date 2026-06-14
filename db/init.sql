@@ -1,5 +1,5 @@
 -- ==========================================
--- Schema database: Inventory Tracker
+-- Schema database: Bookstore Tracker
 -- ==========================================
 
 CREATE TABLE IF NOT EXISTS users (
@@ -13,10 +13,10 @@ CREATE TABLE IF NOT EXISTS users (
 CREATE TABLE IF NOT EXISTS inventory (
   id SERIAL PRIMARY KEY,
   user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
-  name VARCHAR(100) NOT NULL,
-  category VARCHAR(50),
+  name VARCHAR(200) NOT NULL,
+  category TEXT,
   quantity INTEGER NOT NULL DEFAULT 0,
-  location VARCHAR(100),
+  author VARCHAR(150),
   min_threshold INTEGER DEFAULT 5,
   notes TEXT,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP

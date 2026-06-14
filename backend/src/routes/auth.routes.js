@@ -5,21 +5,18 @@ import pool from "../config/db.js";
 
 const router = express.Router();
 
-// REGOLE PASSWORD
 function validaPassword(password) {
   if (password.length < 8) return "La password deve essere lunga almeno 8 caratteri";
   if (!/[A-Z]/.test(password)) return "La password deve contenere almeno una lettera maiuscola";
   if (!/[a-z]/.test(password)) return "La password deve contenere almeno una lettera minuscola";
   if (!/[0-9]/.test(password)) return "La password deve contenere almeno un numero";
   if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)) return "La password deve contenere almeno un carattere speciale (!@#$%^&*...)";
-  return null; // Password valida
+  return null;
 }
 
-// REGISTER: Crea nuovo utente
 router.post("/register", async (req, res) => {
   const { username, email, password } = req.body;
   
-  // Validazione password
   const errorePassword = validaPassword(password);
   if (errorePassword) {
     return res.status(400).json({ error: errorePassword });
@@ -38,7 +35,6 @@ router.post("/register", async (req, res) => {
   }
 });
 
-// LOGIN: Autentica utente
 router.post("/login", async (req, res) => {
   const { email, password } = req.body;
   try {

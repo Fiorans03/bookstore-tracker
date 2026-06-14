@@ -21,7 +21,7 @@ function App() {
   const [registerForm, setRegisterForm] = useState({ username: '', email: '', password: '' });
   
   const [items, setItems] = useState([]);
-  const [form, setForm] = useState({ name: '', category: [], quantity: '', location: '', notes: '' });
+  const [form, setForm] = useState({ name: '', category: [], quantity: '', author: '', notes: '' });
   const [searchTerm, setSearchTerm] = useState('');
   const [showLowStockOnly, setShowLowStockOnly] = useState(false);
   const [editingId, setEditingId] = useState(null);
@@ -71,8 +71,7 @@ function App() {
     setToken('');
     setView('login');
     setLoginForm({ email: '', password: '' });
-    // Resetta il form e lo stato di modifica al logout
-    setForm({ name: '', category: [], quantity: '', location: '', notes: '' });
+    setForm({ name: '', category: [], quantity: '', author: '', notes: '' });
     setEditingId(null);
   };
 
@@ -93,7 +92,6 @@ function App() {
       const payload = {
         ...form,
         quantity: Number(form.quantity),
-        // Unisce i generi con virgola (es. "Giallo, Thriller, Storia")
         category: (Array.isArray(form.category) && form.category.length > 0) ? form.category.join(', ') : 'Varie'
       };
 
@@ -103,8 +101,7 @@ function App() {
       } else {
         await axios.post('http://localhost:3000/inventory', payload);
       }
-      // Resetta sempre il form dopo il salvataggio riuscito
-      setForm({ name: '', category: [], quantity: '', location: '', notes: '' });
+      setForm({ name: '', category: [], quantity: '', author: '', notes: '' });
       fetchItems();
     } catch (err) { 
       console.error("Errore salvataggio:", err);
@@ -113,13 +110,12 @@ function App() {
   };
 
   const handleEdit = (item) => {
-    // Converte la stringa salvata ("Giallo, Thriller") in array per le checkbox
     const genresArray = item.category ? item.category.split(',').map(g => g.trim()) : [];
     setForm({
       name: item.name,
       category: genresArray,
       quantity: item.quantity,
-      location: item.location,
+      author: item.author || '',
       notes: item.notes || ''
     });
     setEditingId(item.id);
@@ -134,10 +130,9 @@ function App() {
 
   const filteredItems = items.filter(item => {
     const term = searchTerm.toLowerCase();
-    // La ricerca controlla TUTTI i generi salvati, non solo il primo
     const matchesSearch = 
       item.name.toLowerCase().includes(term) || 
-      (item.location && item.location.toLowerCase().includes(term)) ||
+      (item.author && item.author.toLowerCase().includes(term)) ||
       item.category.toLowerCase().includes(term) ||
       (item.notes && item.notes.toLowerCase().includes(term));
       
@@ -227,7 +222,6 @@ function App() {
 
       <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginBottom: '2rem', background: '#fafafa', padding: '1.2rem', borderRadius: '8px', border: '1px solid #e0e0e0' }}>
         
-        {/* RIGA 1: Titolo + Tipologia */}
         <div style={{ display: 'flex', gap: '0.8rem', flexWrap: 'wrap' }}>
           <input placeholder="Titolo del libro" value={form.name} onChange={e => setForm({...form, name: e.target.value})} required style={{ flex: 2, minWidth: '200px', padding: '0.6rem', borderRadius: '4px', border: '1px solid #ccc' }} />
           <select value={form.notes} onChange={e => setForm({...form, notes: e.target.value})} style={{ flex: 1, minWidth: '180px', padding: '0.6rem', borderRadius: '4px', border: '1px solid #ccc', background: 'white' }}>
@@ -238,7 +232,6 @@ function App() {
           </select>
         </div>
 
-        {/* RIGA 2: Generi (checkbox multiple) */}
         <div style={{ width: '100%' }}>
           <label style={{ fontWeight: 'bold', fontSize: '0.9rem', display: 'block', marginBottom: '0.5rem', color: '#333' }}>📚 Generi (puoi sceglierne più di uno):</label>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.6rem' }}>
@@ -251,12 +244,11 @@ function App() {
           </div>
         </div>
 
-        {/* RIGA 3: Autore + Copie + Bottoni */}
         <div style={{ display: 'flex', gap: '0.8rem', flexWrap: 'wrap', alignItems: 'flex-end' }}>
-          <input placeholder="Autore" value={form.location} onChange={e => setForm({...form, location: e.target.value})} required style={{ flex: 2, minWidth: '200px', padding: '0.6rem', borderRadius: '4px', border: '1px solid #ccc' }} />
+          <input placeholder="Autore" value={form.author} onChange={e => setForm({...form, author: e.target.value})} required style={{ flex: 2, minWidth: '200px', padding: '0.6rem', borderRadius: '4px', border: '1px solid #ccc' }} />
           <input type="number" placeholder="Copie" value={form.quantity} onChange={e => setForm({...form, quantity: e.target.value})} required style={{ width: '100px', padding: '0.6rem', borderRadius: '4px', border: '1px solid #ccc' }} />
           <button type="submit" style={{ padding: '0.6rem 1.2rem', background: '#8b4513', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}>{editingId ? '💾 Salva' : '➕ Aggiungi'}</button>
-          {editingId && <button type="button" onClick={() => { setEditingId(null); setForm({ name: '', category: [], quantity: '', location: '', notes: '' }); }} style={{ padding: '0.6rem 1.2rem', background: '#9e9e9e', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>Annulla</button>}
+          {editingId && <button type="button" onClick={() => { setEditingId(null); setForm({ name: '', category: [], quantity: '', author: '', notes: '' }); }} style={{ padding: '0.6rem 1.2rem', background: '#9e9e9e', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>Annulla</button>}
         </div>
       </form>
 
@@ -268,7 +260,6 @@ function App() {
         ) : (
           filteredItems.map(item => {
             const status = getItemStatus(item.quantity, item.min_threshold);
-            // 💡 IDEA GENIALE: Prendi solo il PRIMO genere della lista per visualizzarlo
             const mainGenre = item.category ? item.category.split(',')[0].trim() : 'Varie';
             
             return (
@@ -289,9 +280,7 @@ function App() {
                         </span>
                       )}
                     </div>
-                    <span style={{ color: '#555', display: 'block', fontSize: '0.95rem' }}>✍️ {item.location}</span>
-                    
-                    {/* Visualizza SOLO il genere principale, mantenendo il layout pulito */}
+                    <span style={{ color: '#555', display: 'block', fontSize: '0.95rem' }}>✍️ {item.author}</span>
                     <div style={{ display: 'flex', gap: '1rem', marginTop: '0.4rem', fontSize: '0.85rem', color: '#777' }}>
                       <span>📚 {mainGenre}</span>
                       <span>📦 Copie: {item.quantity} (Min: {item.min_threshold})</span>
