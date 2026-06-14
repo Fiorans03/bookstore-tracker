@@ -158,7 +158,7 @@ function App() {
 
   if (!token) {
     return (
-      <div style={{ maxWidth: '450px', margin: '4rem auto', padding: '2rem', border: '1px solid #ddd', borderRadius: '8px', fontFamily: 'sans-serif', textAlign: 'center' }}>
+      <div className="glass-panel" style={{ maxWidth: '450px', margin: '4rem auto', padding: '2rem', fontFamily: 'sans-serif', textAlign: 'center' }}>
         <h2>📚 BookStore Tracker</h2>
         <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', marginBottom: '1.5rem' }}>
           <button onClick={() => setView('login')} style={{ fontWeight: view === 'login' ? 'bold' : 'normal', background: 'none', border: 'none', borderBottom: view === 'login' ? '2px solid #8b4513' : 'none', cursor: 'pointer', fontSize: '1rem' }}>Accedi</button>
@@ -194,7 +194,7 @@ function App() {
   }
 
   return (
-    <div style={{ padding: '2rem', fontFamily: 'sans-serif', maxWidth: '1000px', margin: '0 auto' }}>
+    <div className="glass-panel" style={{ padding: '2rem', fontFamily: 'sans-serif', maxWidth: '1000px', margin: '2rem auto' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
         <h1 style={{ margin: 0 }}>📚 BookStore Tracker</h1>
         <button onClick={handleLogout} style={{ padding: '0.5rem 1rem', background: '#f44336', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>🚪 Logout</button>
