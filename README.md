@@ -53,18 +53,36 @@ Il progetto include una pipeline GitHub Actions che si attiva automaticamente ad
 
 ```text
 bookstore-tracker/
+│
 ├── backend/
 │   ├── src/
-│   │   ├── config/db.js
-│   │   ├── routes/ (auth.routes.js, inventory.routes.js)
+│   │   ├── config/
+│   │   │   └── db.js
+│   │   ├── routes/
+│   │   │   ├── auth.routes.js
+│   │   │   └── inventory.routes.js
 │   │   └── app.js
-│   └── package.json
+│   ├── Dockerfile
+│   ── package.json
+│
 ├── frontend/
-│   ├── src/App.jsx
+│   ├── public/
+│   ├── src/
+│   │   ├── App.jsx
+│   │   ├── index.css
+│   │   └── main.jsx
+│   ├── index.html
+│   ├── Dockerfile
 │   └── package.json
-├── db/init.sql
-├── .github/workflows/ci.yml
-├── docker-compose.yml
+│
+├── db/
+│   └── init.sql
+│
+├── .github/
+│   └── workflows/
+│       └── ci.yml
+│
+── docker-compose.yml
 ├── .env
 └── README.md
 ```
