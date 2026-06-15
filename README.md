@@ -82,7 +82,7 @@ bookstore-tracker/
 │   └── workflows/
 │       └── ci.yml
 │
-── docker-compose.yml
+├── docker-compose.yml
 ├── .env
 └── README.md
 ```
