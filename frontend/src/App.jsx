@@ -267,7 +267,7 @@ function App() {
                 <div style={{ display: 'flex', alignItems: 'flex-start', gap: '1rem' }}>
                   <div style={{ 
                     background: status.bg, color: status.color, padding: '0.3rem 0.6rem', borderRadius: '20px', 
-                    fontSize: '0.75rem', fontWeight: 'bold', minWidth: '110px', textAlign: 'center', marginTop: '0.2rem'
+                    fontSize: '0.75rem', fontWeight: 'bold', minWidth: '150px', textAlign: 'center', marginTop: '0.2rem', flexShrink: 0
                   }}>
                     {status.label}
                   </div>
